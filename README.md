@@ -182,7 +182,6 @@ Operational categories such as banking and payments showed more distributed pain
 
 ## 9. Repository Structure
 
-```text
 data/
   raw/
   interim/
@@ -205,19 +204,17 @@ models_artifacts/
 notebooks/
 tests/
 
+---
+
 ## 10. Main Scripts
-
 ### Ingestion
-
 src.ingestion.read_large_csv
 
 ### Preprocessing
-
 src.preprocessing.clean_text
 src.preprocessing.split_data
 
 ### Labeling
-
 src.labeling.sentiment_rules
 
 ### Baseline model
