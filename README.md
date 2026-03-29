@@ -1,295 +1,279 @@
-# Financial Complaints NLP — Sentiment Analysis and Customer Pain Points
+# Reclamações Financeiras NLP — Análise de Sentimento e Pontos de Dor do Cliente :contentReference[oaicite:0]{index=0}
 
-## 1. Overview
+## 1. Visão Geral
 
-This project delivers an end-to-end NLP pipeline to classify sentiment in financial complaints and identify the main customer pain points by product category.
+Este projeto entrega um pipeline completo de NLP para classificar o sentimento em reclamações financeiras e identificar os principais pontos de dor dos clientes por categoria de produto.
 
-The solution was designed around a real-world large-scale complaint dataset, combining data engineering, text preprocessing, supervised learning, deep learning, and business-oriented analysis.
+A solução foi desenhada com base em um dataset real de grande escala, combinando engenharia de dados, pré-processamento de texto, aprendizado supervisionado, deep learning e análise orientada a negócios.
 
-This repository was developed as the Phase 5 Tech Challenge of the Pós Tech in Data Analytics program, focused on building a Deep Learning model for sentiment classification in financial complaints and 
-extracting the main negative themes by financial product category.
+Este repositório foi desenvolvido como o Tech Challenge da Fase 5 da Pós Tech em Data Analytics, com foco na construção de um modelo de Deep Learning para classificação de sentimento em reclamações financeiras e extração dos principais temas negativos por categoria de produto financeiro.
 
----
+## 2. Problema de Negócio
 
-## 2. Business Problem
+Instituições financeiras recebem volumes massivos de reclamações não estruturadas.
 
-Financial institutions receive massive volumes of unstructured customer complaints.  
-The challenge is not only to read these texts, but to transform them into structured analytical signals.
+O desafio não é apenas ler esses textos, mas transformá-los em sinais analíticos estruturados.
 
-This project addresses two questions:
+Este projeto responde duas perguntas:
 
-1. Can we automatically classify complaint sentiment as positive or negative?
-2. What are the most common pain points reported by customers in each financial product category?
+Podemos classificar automaticamente o sentimento das reclamações como positivo ou negativo?  
+Quais são os principais pontos de dor relatados pelos clientes em cada categoria de produto financeiro?
 
-The goal is to support better decision-making for customer experience, product improvement, operational prioritization, and risk monitoring.
+O objetivo é apoiar decisões melhores em experiência do cliente, melhoria de produtos, priorização operacional e monitoramento de riscos.
 
----
+## 3. Requisitos do Desafio
 
-## 3. Challenge Requirements
+De acordo com o desafio da Fase 5, a entrega deve incluir:
 
-According to the Phase 5 challenge, the deliverable should include:
+- pré-processamento de texto  
+- técnicas de vetorização  
+- criação da variável alvo de sentimento  
+- treinamento de modelo de Deep Learning  
+- análise dos principais pontos de dor por produto  
+- visualizações para interpretação  
+- repositório no GitHub com pipeline NLP e modelo  
 
-- text preprocessing;
-- text vectorization techniques;
-- creation of the target sentiment variable;
-- training of a Deep Learning model;
-- analysis of the main customer pain points by product;
-- visualizations to support interpretation;
-- GitHub repository with the NLP pipeline and classification model.  
-
-This repository was structured to meet all those requirements.
-
----
+Este repositório foi estruturado para atender todos esses requisitos.
 
 ## 4. Dataset
 
-### Source
-- CFPB public complaint database
+### Fonte
 
-### Main fields used
-- `Product`
-- `Sub-product`
-- `Issue`
-- `Sub-issue`
-- `Consumer complaint narrative`
-- `Company`
-- `State`
-- `Submitted via`
-- `Company response to consumer`
-- `Timely response?`
-- `Consumer disputed?`
-- `Complaint ID`
+Base pública de reclamações do CFPB
 
-The dataset includes complaint narratives and contextual fields that allow both sentiment modeling and pain-point analysis by product category.
+### Principais campos utilizados
 
----
+- Produto  
+- Subproduto  
+- Problema  
+- Subproblema  
+- Narrativa da reclamação  
+- Empresa  
+- Estado  
+- Canal de envio  
+- Resposta da empresa ao consumidor  
+- Resposta no prazo?  
+- Consumidor contestou?  
+- ID da reclamação  
 
-## 5. Data Scale
+O dataset inclui narrativas e dados contextuais que permitem tanto modelagem de sentimento quanto análise de pontos de dor por categoria.
 
-Pipeline execution summary:
+## 5. Escala dos Dados
 
-- Total rows read: ~14.1 million
-- Filtered relevant rows: ~3.75 million
-- Cleaned complaint texts: ~3.73 million
-- Negative complaints analyzed for pain points: ~2.48 million
+Resumo da execução:
 
-Because of the scale, the ingestion step was implemented using chunked reading and Parquet conversion for better performance and reproducibility.
+- Linhas totais: ~14,1 milhões  
+- Linhas relevantes: ~3,75 milhões  
+- Textos limpos: ~3,73 milhões  
+- Reclamações negativas analisadas: ~2,48 milhões  
 
----
+Devido à escala, a ingestão foi feita com leitura em chunks e conversão para Parquet para melhor performance.
 
-## 6. Project Pipeline
+## 6. Pipeline do Projeto
 
-### 6.1 Data Ingestion
-- large CSV ingestion in chunks
-- relevant column selection
-- duplicate removal
-- export to Parquet
+### 6.1 Ingestão
 
-### 6.2 Text Preprocessing
-- lowercase normalization
-- regex cleaning
-- punctuation removal
-- stopword removal
-- invalid/short narrative filtering
+- leitura de CSV grande em chunks  
+- seleção de colunas relevantes  
+- remoção de duplicados  
+- exportação para Parquet  
 
-### 6.3 Target Creation
-A target column named `sentiment` was created using a weak supervision strategy based on operational signals available in the dataset, especially:
+### 6.2 Pré-processamento
 
-- `Company response to consumer`
-- `Consumer disputed?`
+- normalização para minúsculas  
+- limpeza com regex  
+- remoção de pontuação  
+- remoção de stopwords  
+- filtragem de textos inválidos  
 
-This approach allowed scalable labeling for millions of complaints.
+### 6.3 Criação do Target
 
-### 6.4 Train / Validation / Test Split
-- stratified split
-- train / validation / test separation
-- preserved class distribution
-- avoided leakage
+Foi criada a coluna **sentiment** usando weak supervision baseada em:
 
-### 6.5 Baseline Model
-- TF-IDF
-- Logistic Regression
+- resposta da empresa  
+- disputa do consumidor  
 
-### 6.6 Deep Learning Model
-- Tokenizer + padded sequences
-- Embedding layer
-- LSTM
-- Dense output with sigmoid activation
+### 6.4 Split
 
-### 6.7 Pain Point Analysis
-- filtering negative complaints
-- grouping by product
-- term-frequency analysis
-- structured pain classification
-- executive visualizations by product group
+- divisão estratificada  
+- treino / validação / teste  
+- preservação de distribuição  
+- prevenção de vazamento  
 
----
+### 6.5 Modelo Base
 
-## 7. Modeling Results
+- TF-IDF  
+- Regressão Logística  
 
-## 7.1 Baseline — TF-IDF + Logistic Regression
+### 6.6 Deep Learning
 
-### Test metrics
-- Accuracy: **0.71**
-- Precision (class 1): **0.59**
-- Recall (class 1): **0.45**
-- F1-score (class 1): **0.51**
+- Tokenização  
+- Padding  
+- Embedding  
+- LSTM  
+- Saída com sigmoid  
 
-This baseline was stable between validation and test and served as a strong interpretability benchmark.
+### 6.7 Análise de Pontos de Dor
 
----
+- filtro de reclamações negativas  
+- agrupamento por produto  
+- análise de frequência de termos  
+- classificação estruturada  
+- visualizações executivas  
 
-## 7.2 Deep Learning — LSTM
+## 7. Resultados
 
-### Test metrics
-- Accuracy: **0.7147**
-- Precision (class 1): **0.5915**
-- Recall (class 1): **0.4855**
-- F1-score (class 1): **0.5333**
+### 7.1 Modelo Base
 
-### Key takeaway
-The LSTM did not dramatically increase overall accuracy, but it improved the identification of the minority class, especially by reducing false negatives. This is consistent with the role of recurrent 
-networks in capturing sequential context better than sparse lexical representations.
+- Accuracy: 0.71  
+- Precision: 0.59  
+- Recall: 0.45  
+- F1: 0.51  
 
----
+### 7.2 LSTM
 
-## 8. Main Business Insights
+- Accuracy: 0.7147  
+- Precision: 0.5915  
+- Recall: 0.4855  
+- F1: 0.5333  
 
-After analyzing negative complaints, the following pattern emerged:
+**Insight:**  
+O LSTM melhorou a identificação da classe minoritária, reduzindo falsos negativos.
 
-### Product groups with highest concentration of negative pain points
-- `credit_reporting`
-- `debt_collection`
-- `loans`
-- `credit_card`
-- `banking`
-- `payments`
+## 8. Principais Insights
 
-### Main pain points by group
-- **credit_reporting** → `credit_score`
-- **debt_collection** → `debt_dispute`
-- **loans** → `payment_issues`
-- **credit_card** → `credit_score`
-- **banking** → `account_access`
-- **payments** → `customer_service`
+Produtos com maior dor:
 
-### Executive interpretation
-The most relevant finding is that the largest concentration of customer pain is not simply related to service quality, but to structural issues involving credit information and debt disputes.
+- credit_reporting  
+- debt_collection  
+- loans  
+- credit_card  
+- banking  
+- payments  
 
-Operational categories such as banking and payments showed more distributed pain patterns, linked to access, support, and customer experience.
+Pontos de dor:
 
----
+- credit_reporting → score de crédito  
+- debt_collection → disputa de dívida  
+- loans → problemas de pagamento  
+- credit_card → score  
+- banking → acesso à conta  
+- payments → atendimento  
 
-## 9. Repository Structure
+**Insight executivo:**  
+Os principais problemas não são apenas operacionais, mas estruturais (crédito e dívida).
 
-data/
-  raw/
-  interim/
-  processed/
+## 9. Estrutura do Repositório
 
-src/
-  ingestion/
-  preprocessing/
-  labeling/
-  features/
-  models/
-  analysis/
-  aws_pipeline/
+data/  
+  raw/  
+  interim/  
+  processed/  
 
-reports/
-  figures/
-  tables/
+src/  
+  ingestion/  
+  preprocessing/  
+  labeling/  
+  features/  
+  models/  
+  analysis/  
+  aws_pipeline/  
 
-models_artifacts/
-notebooks/
-tests/
+reports/  
+  figures/  
+  tables/  
+
+models_artifacts/  
+notebooks/  
+tests/  
 
 ---
 
-## 10. Main Scripts
-### Ingestion
+## 10. Scripts Principais
+
+### Ingestão
+
 src.ingestion.read_large_csv
 
-### Preprocessing
-src.preprocessing.clean_text
+### Pré-processamento
+
+src.preprocessing.clean_text  
 src.preprocessing.split_data
 
-### Labeling
+### Rotulagem
+
 src.labeling.sentiment_rules
 
-### Baseline model
+### Modelo Base
 
 src.models.train_tfidf_logreg
 
-### Deep learning model
+### Deep Learning
 
 src.models.train_lstm
 
-### Pain-point analysis
+### Análise de Pontos de Dor
 
-src.analysis.pain_points
-src.analysis.pain_points_structured
+src.analysis.pain_points  
+src.analysis.pain_points_structured  
 src.analysis.visualize_pain_points
 
-## 11. How to Run
+## 11. Como Executar
 
-### 1. Create and activate virtual environment
+### 1. Criar ambiente virtual
 
-python3.12 -m venv .venv
-source .venv/bin/activate
+python3.12 -m venv .venv  
+source .venv/bin/activate  
 
-### 2. Install dependencies
+### 2. Instalar dependências
 
-python -m pip install --upgrade pip setuptools wheel
-pip install -r requirements.txt
+python -m pip install --upgrade pip setuptools wheel  
+pip install -r requirements.txt  
 
-### 3. Run pipeline
+### 3. Rodar pipeline
 
-python -m src.ingestion.read_large_csv
-python -m src.preprocessing.clean_text
-python -m src.labeling.sentiment_rules
-python -m src.preprocessing.split_data
-python -m src.models.train_tfidf_logreg
-python -m src.models.train_lstm
-python -m src.analysis.pain_points
-python -m src.analysis.pain_points_structured
-python -m src.analysis.visualize_pain_points
+python -m src.ingestion.read_large_csv  
+python -m src.preprocessing.clean_text  
+python -m src.labeling.sentiment_rules  
+python -m src.preprocessing.split_data  
+python -m src.models.train_tfidf_logreg  
+python -m src.models.train_lstm  
+python -m src.analysis.pain_points  
+python -m src.analysis.pain_points_structured  
+python -m src.analysis.visualize_pain_points  
 
-## 12. Tech Stack
+## 12. Stack Tecnológico
 
-Python
-Pandas
-NumPy
-scikit-learn
-TensorFlow / Keras
-Matplotlib
-WordCloud
-PyArrow
+- Python  
+- Pandas  
+- NumPy  
+- scikit-learn  
+- TensorFlow / Keras  
+- Matplotlib  
+- WordCloud  
+- PyArrow  
 
-## 13. Limitations
+## 13. Limitações
 
-The target variable was created using weak supervision, not manual ground truth labeling.
-Complaint narratives are noisy and naturally ambiguous.
-The baseline and LSTM operate only on text, while the labeling strategy uses structured proxy signals from operational fields.
-More advanced contextual models such as BERT may further improve semantic capture.
+- Target criado via weak supervision  
+- Dados ruidosos  
+- Modelos baseados apenas em texto  
+- Possível melhoria com BERT  
 
-## 14. Future Improvements
+## 14. Melhorias Futuras
 
-improve class-imbalance treatment
-evaluate threshold tuning
-test pretrained embeddings
-fine-tune BERT on a representative sample
-build a dashboard for continuous complaint monitoring
-integrate storage and querying with AWS S3 and Athena
+- tratar desbalanceamento  
+- ajustar thresholds  
+- embeddings pré-treinados  
+- fine-tuning com BERT  
+- dashboard  
+- integração com AWS  
 
-## 15. Conclusion
+## 15. Conclusão
 
-This project demonstrates how to transform large-scale unstructured financial complaints into analytical intelligence.
-Beyond sentiment classification, it organizes customer narratives into actionable pain-point structures, connecting NLP techniques with practical business value in the financial sector.
+O projeto mostra como transformar dados não estruturados em inteligência analítica, conectando NLP com valor de negócio.
 
-## 16. Author
+## 16. Autor
 
-Breno Leoni Ebeling
-Economist | Analytics | NLP | Financial Services
-
-
+Breno Leoni Ebeling  
+Economista | Analytics | NLP | Serviços Financeiros
